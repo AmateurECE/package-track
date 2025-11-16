@@ -3,17 +3,18 @@ use lettre::{
     message::{Mailbox, SinglePart},
 };
 
-use crate::{component::Project, version::Version};
+use crate::{component::Project, outdated::OutdatedComponent};
 
-pub struct OutdatedComponent {
-    pub name: String,
-    pub latest_version: Version,
-    pub current_version: Version,
-    pub projects: Vec<Project>,
+pub trait IntoMessage {
+    fn into_message(
+        self,
+        recipient: Mailbox,
+        sending_domain: &str,
+    ) -> Result<Message, lettre::error::Error>;
 }
 
-impl OutdatedComponent {
-    pub fn into_message(
+impl IntoMessage for OutdatedComponent {
+    fn into_message(
         self,
         recipient: Mailbox,
         sending_domain: &str,

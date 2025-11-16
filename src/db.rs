@@ -17,20 +17,20 @@ impl Database {
     }
 
     pub async fn components(&self) -> Result<impl Iterator<Item = Component>, sqlx::Error> {
-        Ok(
-            sqlx::query_as::<_, (i32, String, String, String)>("SELECT * FROM components")
-                .fetch_all(&self.pool)
-                .await?
-                .into_iter()
-                .map(|(id, name, version, url)| Component {
-                    id,
-                    name,
-                    // INVARIANT: Any version in the database is a valid version
-                    current_version: version.parse().unwrap(),
-                    // TODO: Support more than just GitHub
-                    repository: Repository::GitHub(url),
-                }),
+        Ok(sqlx::query_as::<_, (i32, String, String, String)>(
+            "SELECT (id, name, current_version, url) FROM components",
         )
+        .fetch_all(&self.pool)
+        .await?
+        .into_iter()
+        .map(|(id, name, version, url)| Component {
+            id,
+            name,
+            // INVARIANT: Any version in the database is a valid version
+            current_version: version.parse().unwrap(),
+            // TODO: Support more than just GitHub
+            repository: Repository::GitHub(url),
+        }))
     }
 
     pub async fn known_versions(

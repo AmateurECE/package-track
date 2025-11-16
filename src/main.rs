@@ -6,14 +6,16 @@ use std::env;
 use lettre::message::Mailbox;
 use lettre::{AsyncSmtpTransport, AsyncTransport, Tokio1Executor};
 
-use crate::component::find_outdated;
 use crate::db::Database;
+use crate::email::IntoMessage;
 use crate::git::get_git_versions;
+use crate::outdated::find_outdated;
 
 mod component;
 mod db;
 mod email;
 mod git;
+mod outdated;
 mod version;
 
 #[tokio::main]
